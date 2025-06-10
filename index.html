@@ -4,76 +4,81 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Son Depremler</title>
+    <title>Son Depremler – Canlı Deprem Haritası | Mapelse</title>
     <meta
       name="description"
-      content="Son 3 ay içindeki depremler – USGS canlı verileri ile interaktif harita"
+      content="Canlı USGS verileriyle son 3 ayda meydana gelen depremleri interaktif haritada anlık takip edin. Büyüklük, konum ve zaman bilgileri tek ekranda."
     />
     <meta
       name="keywords"
-      content="deprem, son depremler, interactive map, earthquakes, Türkiye deprem, USGS"
+      content="deprem haritası, son depremler, canlı deprem, interactive earthquake map, Turkey earthquakes, USGS live data"
     />
     <meta name="robots" content="index, follow" />
-
-    <!-- Canonical and Hreflang -->
-    <link rel="canonical" href="https://mapelse.github.io/son-depremler.html" />
+    <link rel="canonical" href="https://mapelse.github.io/latest_earthquakes" />
     <link
       rel="alternate"
       hreflang="tr"
-      href="https://mapelse.github.io/son-depremler.html"
+      href="https://mapelse.github.io/latest_earthquakes"
     />
     <link
       rel="alternate"
       hreflang="en"
-      href="https://mapelse.github.io/son-depremler.html?lang=en"
+      href="https://mapelse.github.io/latest_earthquakes?lang=en"
     />
-
-    <!-- Open Graph -->
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://mapelse.github.io/latest_earthquakes"
+    />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Son Depremler - Interaktif Deprem Haritası"
+      content="Son Depremler – Canlı Deprem Haritası | Mapelse"
     />
     <meta
       property="og:description"
-      content="Son 3 ay içindeki depremler – USGS canlı verileri ile interaktif harita"
+      content="Son 3 ayda meydana gelen depremleri canlı USGS verisiyle interaktif haritada görüntüleyin."
     />
     <meta
       property="og:url"
-      content="https://mapelse.github.io/son-depremler.html"
+      content="https://mapelse.github.io/latest_earthquakes"
     />
-    <meta property="og:site_name" content="Mapelse Son Depremler" />
+    <meta property="og:site_name" content="Mapelse" />
     <meta
       property="og:image"
       content="https://mapelse.github.io/assets/images/preview.png"
     />
-
-    <!-- Twitter Card -->
+    <meta
+      property="og:image:alt"
+      content="Dünya üzerinde son depremler için ısı haritası önizlemesi"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@mapelse" />
     <meta
       name="twitter:title"
-      content="Son Depremler - Interaktif Deprem Haritası"
+      content="Son Depremler – Canlı Deprem Haritası | Mapelse"
     />
     <meta
       name="twitter:description"
-      content="Son 3 ay içindeki depremler – USGS canlı verileri ile interaktif harita"
+      content="Son 3 ayda meydana gelen depremleri canlı USGS verisiyle interaktif haritada görüntüleyin."
     />
     <meta
       name="twitter:image"
       content="https://mapelse.github.io/assets/images/preview.png"
     />
-
-    <!-- Structured Data -->
+    <meta
+      name="twitter:image:alt"
+      content="Dünya üzerinde son depremler için ısı haritası önizlemesi"
+    />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Son Depremler",
-        "url": "https://mapelse.github.io/son-depremler.html",
-        "description": "Interaktif harita ile son 3 ay içindeki depremler bilgisi",
+        "name": "Son Depremler – Canlı Deprem Haritası",
+        "url": "https://mapelse.github.io/latest_earthquakes",
+        "description": "Canlı USGS verileriyle son 3 ayda meydana gelen depremleri interaktif haritada anlık takip edin.",
         "inLanguage": "tr"
       }
     </script>
@@ -88,76 +93,224 @@
         height: 100%;
         margin: 0;
         padding: 0;
-        font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+      }
+      .panel {
+        position: fixed;
+        top: 50%;
+        right: -360px;
+        width: 360px;
+        max-width: 90%;
+        height: 80%;
+        transform: translateY(-50%);
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: -4px 0 14px rgba(0, 0, 0, 0.35);
+        transition: right 0.35s ease;
+        z-index: 998;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel.open {
+        right: 0;
+      }
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f3f4f6;
+        border-bottom: 1px solid #e5e7eb;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+      }
+      .panel-header h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .panel-close {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        cursor: pointer;
+      }
+      .panel-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 16px;
+      }
+      #quakeTable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      #quakeTable th {
+        position: sticky;
+        top: 0;
+        background: #fafafa;
+        text-align: left;
+        font-weight: 600;
+        padding: 6px 4px;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 1;
+      }
+      #quakeTable td {
+        padding: 6px 4px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      #quakeTable tr:hover {
+        background: #f9fafb;
+        cursor: pointer;
+      }
+      .panel-toggle {
+        position: fixed;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 997;
+      }
+      @media (max-width: 480px) {
+        .panel {
+          width: 280px;
+          height: 85%;
+        }
+      }
+      .leaflet-control-logo {
+        background: #fff;
+        padding: 4px;
+        border-radius: 50%;
+        margin-top: 52px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
+        cursor: pointer;
+      }
+      .leaflet-control-logo img {
+        display: block;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+      }
+      .legend {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 12px;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        font-size: 0.8rem;
+        line-height: 1.4em;
+        color: #222;
+      }
+      .legend div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+      }
+      .legend strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .leaflet-control.legend {
+        z-index: 996 !important;
       }
       .pulse {
-        width: 35px;
-        height: 35px;
-        margin: -12px;
+        width: 32px;
+        height: 32px;
+        margin: -11px;
         border-radius: 50%;
-        background: rgb(0, 101, 244);
-        border: 2px solid white;
-        opacity: 0.8;
+        background: #0065f4;
+        border: 2px solid #fff;
         animation: pulse 2s ease-out infinite;
-        cursor: pointer;
       }
       @keyframes pulse {
         0% {
-          box-shadow: 0 0 0 0 white;
+          box-shadow: 0 0 0 0 rgba(0, 101, 244, 0.7);
         }
         70% {
-          box-shadow: 0 0 0 24px rgba(255, 0, 0, 0);
+          box-shadow: 0 0 0 24px rgba(0, 101, 244, 0);
         }
         100% {
-          box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+          box-shadow: 0 0 0 0 rgba(0, 101, 244, 0);
         }
       }
-      .legend {
-        background: white;
-        padding: 10px;
-        line-height: 1.5em;
-        color: #333;
-        font-size: 12px;
-      }
-      .legend .title {
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-      .legend-color {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        margin-right: 5px;
-        vertical-align: middle;
-      }
-      .lang-toggle {
-        background: white;
-        border: none;
-        padding: 5px 8px;
-        cursor: pointer;
-        font-size: 12px;
+      .table-hint {
+        font-size: 0.8rem;
+        color: #666;
+        margin: 0 0 6px 0;
       }
     </style>
   </head>
   <body>
     <div id="map"></div>
+    <aside id="quakePanel" class="panel open" aria-hidden="false">
+      <header class="panel-header">
+        <h3 id="panelTitle">Son 10 Deprem</h3>
+        <button id="closePanel" class="panel-close" aria-label="Kapat">
+          &times;
+        </button>
+      </header>
+      <section class="panel-body">
+        <p id="tableHint" class="table-hint">
+          En son gerçekleşen deprem kalp atışı animasyonuyla gosterilen mavi
+          dairedir. <br />
+          <br />
+          Tablodaki konumlara gitmek için tablo satırına tıklayın
+        </p>
+        <table id="quakeTable"></table>
+        <table id="quakeTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th id="thMag">Mag</th>
+              <th id="thPlace">Yer</th>
+              <th id="thTime">Zaman</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+      <footer id="panelFooter" class="panel-footer">
+        <a href="https://earthquake.usgs.gov/" target="_blank" rel="noopener"
+          >USGS</a
+        >
+      </footer>
+    </aside>
+    <button id="openPanel" class="panel-toggle" aria-label="Paneli Aç">
+      ☰
+    </button>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        if (typeof L === "undefined")
-          return console.error("Leaflet yüklenemedi");
-        let lang = "tr";
-        const translations = {
+        const map = L.map("map").setView([39, 35], 3);
+        L.tileLayer(
+          "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+          { maxZoom: 20 }
+        ).addTo(map);
+        ["sariPane", "turuncuPane", "kirmiziPane"].forEach((p, i) => {
+          map.createPane(p);
+          map.getPane(p).style.zIndex = 400 + i;
+        });
+        const T = {
           tr: {
             title: "Zaman",
             wk: "Son 1 hafta",
             mo: "1 hafta - 1 ay",
             ma: "1 ay - 3 ay",
-            magnitude: "Magnit&uuml;d",
+            magnitude: "Magnitüd",
             place: "Yer",
             time: "Zaman",
             details: "Detay",
+            hint: "En son gerçekleşen deprem kalp atışı animasyonuyla gösterilen mavi dairedir.<br><br>Konuma gitmek için satıra tıklayın",
           },
           en: {
             title: "Time",
@@ -168,162 +321,172 @@
             place: "Location",
             time: "Time",
             details: "Details",
+            hint: "The most recent earthquake is represented by the blue circle with a heartbeat animation.<br><br>Click a row to fly to its location",
           },
         };
-        const map = L.map("map").setView([39.0, 35.0], 3);
-        L.tileLayer(
-          "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}",
-          {
-            minZoom: 0,
-            maxZoom: 20,
-            attribution:
-              '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            ext: "png",
-          }
-        ).addTo(map);
-
-        // Language toggle button
+        let lang = "tr";
+        // Dil düğmesi (sağ üst)
         const langControl = L.control({ position: "topright" });
-        langControl.onAdd = () => {
+        langControl.onAdd = function () {
           const btn = L.DomUtil.create("button", "lang-toggle");
-          btn.innerText = "EN";
-          btn.onclick = () => {
-            toggleLang();
-          };
+          btn.textContent = lang === "tr" ? "EN" : "TR";
+          btn.addEventListener("click", toggleLang, false);
           return btn;
         };
         langControl.addTo(map);
 
+        map.addControl(
+          new (L.Control.extend({
+            options: { position: "topright" },
+            onAdd() {
+              const d = L.DomUtil.create("div", "leaflet-control-logo");
+              d.innerHTML = '<img src="logo.svg" alt="Mapelse">';
+              d.onclick = () => (location.href = "https://mapelse.github.io/");
+              return d;
+            },
+          }))()
+        );
         let legend;
-        function addLegend() {
+        const colors = ["#FF0000", "#eb9800", "#fff6b0"];
+        function drawLegend() {
           if (legend) map.removeControl(legend);
-          legend = L.control({ position: "bottomright" });
+          legend = L.control({ position: "bottomleft" });
           legend.onAdd = () => {
-            const div = L.DomUtil.create("div", "legend");
-            const t = translations[lang];
-            div.innerHTML =
-              `<div class="title">${t.title}</div>` +
-              `<div><span class="legend-color" style="background:#FF0000"></span> ${t.wk}</div>` +
-              `<div><span class="legend-color" style="background:#ffb703"></span> ${t.mo}</div>` +
-              `<div><span class="legend-color" style="background:#faf689"></span> ${t.ma}</div>`;
-            return div;
+            const d = L.DomUtil.create("div", "legend"),
+              t = T[lang];
+            d.innerHTML =
+              "<strong>" +
+              t.title +
+              "</strong>" +
+              [t.wk, t.mo, t.ma]
+                .map(
+                  (l, i) =>
+                    `<div><span style="width:12px;height:12px;background:${colors[i]};display:inline-block;border-radius:2px"></span>${l}</div>`
+                )
+                .join("");
+            return d;
           };
           legend.addTo(map);
         }
-
-        let heatLayer;
-        const depremler = L.geoJson(null, {
-          pointToLayer: (f, latlng) => {
-            const mag = f.properties.mag;
-            const radius = mag * 2;
-            const ageDays =
-              (Date.now() - f.properties.time) / (1000 * 60 * 60 * 24);
-            let fillColor =
-              ageDays < 7 ? "#FF0000" : ageDays < 30 ? "#ffb703" : "#faf689";
-            return L.circleMarker(latlng, {
-              radius,
+        drawLegend();
+        const quakes = L.geoJson(null, {
+          pointToLayer: (f, ll) => {
+            const age = (Date.now() - f.properties.time) / 86400000,
+              p =
+                age < 7 ? "kirmiziPane" : age < 30 ? "turuncuPane" : "sariPane",
+              fill = age < 7 ? "#FF0000" : age < 30 ? "#ffb703" : "#faf689";
+            return L.circleMarker(ll, {
+              pane: p,
+              radius: f.properties.mag * 2,
               weight: 0.6,
               color: "#000",
-              fillColor,
-              fillOpacity: 0.7,
+              fillColor: fill,
+              fillOpacity: 0.8,
             });
           },
           onEachFeature: (f, l) => {
-            const p = f.properties;
-            const t = translations[lang];
+            const p = f.properties,
+              t = T[lang];
             l.bindPopup(
-              `<b>${t.magnitude}:</b> ${p.mag}<br>` +
-                `<b>${t.place}:</b> ${p.place}<br>` +
-                `<b>${t.time}:</b> ${new Date(p.time).toLocaleString()}<br>` +
-                `<a href="${p.url}" target="_blank">${t.details}</a>`
+              `<b>${t.magnitude}:</b> ${p.mag}<br><b>${t.place}:</b> ${
+                p.place
+              }<br><b>${t.time}:</b> ${new Date(
+                p.time
+              ).toLocaleString()}<br><a href='${p.url}' target='_blank'>${
+                t.details
+              }</a>`
             );
           },
         }).addTo(map);
-
-        let pulseMarker;
-        async function loadQuakes() {
-          const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0];
-          const endDate = new Date().toISOString().split("T")[0];
-          const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${startDate}&endtime=${endDate}&minmagnitude=3&orderby=time`;
+        let pulse;
+        async function loadData() {
+          const s = new Date(Date.now() - 90 * 864e5)
+              .toISOString()
+              .split("T")[0],
+            e = new Date().toISOString().split("T")[0];
+          const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=${s}&endtime=${e}&minmagnitude=3&orderby=time`;
           try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            depremler.clearLayers();
-            const heatPoints = data.features.map((f) => {
-              const [lng, lat] = f.geometry.coordinates;
-              return [lat, lng, f.properties.mag];
-            });
-            if (heatLayer) heatLayer.setLatLngs(heatPoints);
-            else
-              heatLayer = L.heatLayer(heatPoints, {
-                radius: 25,
-                blur: 15,
-                maxZoom: 6,
-              });
-            depremler.addData(data);
-            const latest = data.features[0];
-            if (latest) {
-              const [lng, lat] = latest.geometry.coordinates;
-              const p = latest.properties;
-              const t = translations[lang];
-              const popup =
-                `<b>${t.magnitude}:</b> ${p.mag}<br>` +
-                `<b>${t.place}:</b> ${p.place}<br>` +
-                `<b>${t.time}:</b> ${new Date(p.time).toLocaleString()}<br>` +
-                `<a href="${p.url}" target="_blank">${t.details}</a>`;
-              if (pulseMarker) map.removeLayer(pulseMarker);
-              pulseMarker = L.marker([lat, lng], {
+            const data = await (await fetch(url)).json();
+            quakes.clearLayers();
+            quakes.addData(data);
+            if (pulse) map.removeLayer(pulse);
+            if (data.features.length) {
+              const [lng, lat] = data.features[0].geometry.coordinates;
+              pulse = L.marker([lat, lng], {
                 icon: L.divIcon({ className: "pulse" }),
               }).addTo(map);
-              pulseMarker.bindPopup(popup);
             }
-            toggleLayers();
+            fillTable(data.features);
           } catch (err) {
-            console.error("Deprem verisi alınırken hata:", err.message);
+            console.error(err);
           }
         }
+        const panel = document.getElementById("quakePanel"),
+          open = document.getElementById("openPanel"),
+          close = document.getElementById("closePanel");
 
-        function toggleLayers() {
-          const z = map.getZoom();
-          if (z <= 2) {
-            if (!map.hasLayer(heatLayer)) map.addLayer(heatLayer);
-            if (map.hasLayer(depremler)) map.removeLayer(depremler);
-            if (pulseMarker) map.removeLayer(pulseMarker);
-          } else {
-            if (!map.hasLayer(depremler)) map.addLayer(depremler);
-            if (map.hasLayer(heatLayer)) map.removeLayer(heatLayer);
-            if (pulseMarker) map.addLayer(pulseMarker);
-          }
+        panel.classList.add("open"); // ← sayfa açılır açılmaz göster
+
+        open.onclick = () => panel.classList.add("open");
+        close.onclick = () => panel.classList.remove("open");
+
+        let halo; // aktif mavi kontur
+        const HALO_STYLE = {
+          weight: 2,
+          color: "#1e90ff", // mavi
+          fillOpacity: 0,
+        };
+
+        function fillTable(feat) {
+          const tb = document.querySelector("#quakeTable tbody");
+          tb.innerHTML = "";
+
+          feat.slice(0, 10).forEach((f, i) => {
+            const [lng, lat] = f.geometry.coordinates;
+            const p = f.properties;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${p.mag}</td>
+      <td>${p.place.split(",")[0]}</td>
+      <td>${new Date(p.time).toLocaleString()}</td>
+    `;
+
+            // sadece tık – flyTo + halo
+            tr.onclick = () => {
+              map.flyTo([lat, lng], 8, { duration: 0.6 });
+
+              if (halo) map.removeLayer(halo); // önceki halkayı temizle
+              halo = L.circleMarker([lat, lng], {
+                ...HALO_STYLE,
+                radius: p.mag * 2 + 6, // mevcut marker’dan biraz büyük
+              }).addTo(map);
+            };
+
+            tb.appendChild(tr);
+          });
         }
 
         function toggleLang() {
           lang = lang === "tr" ? "en" : "tr";
-          document.documentElement.lang = lang;
-          // Update button text
-          document.querySelector(".lang-toggle").innerText =
+          document.querySelector(".lang-toggle").textContent =
             lang === "tr" ? "EN" : "TR";
-          // Update title and meta description
-          document.title = lang === "tr" ? "Son Depremler" : "Latest Quakes";
-          document
-            .querySelector("meta[name=description]")
-            .setAttribute(
-              "content",
-              lang === "tr"
-                ? "Son 3 ay içindeki depremler – USGS canlı verileri ile interaktif harita"
-                : "Interactive map of last 3 months earthquakes – live USGS data"
-            );
-          // Re-add legend and refresh popups
-          addLegend();
-          loadQuakes();
+          drawLegend();
+          updateHeaders();
+          loadData();
         }
-
-        map.on("zoomend", toggleLayers);
-        addLegend();
-        loadQuakes();
-        setInterval(loadQuakes, 10 * 60 * 1000);
+        function updateHeaders() {
+          const t = T[lang];
+          document.getElementById("panelTitle").textContent =
+            lang === "tr" ? "Son 10 Deprem" : "Last 10 Quakes";
+          document.getElementById("thMag").textContent = t.magnitude;
+          document.getElementById("thPlace").textContent = t.place;
+          document.getElementById("thTime").textContent = t.time;
+          document.getElementById("tableHint").innerHTML = t.hint;
+        }
+        loadData();
+        setInterval(loadData, 600000);
       });
     </script>
   </body>

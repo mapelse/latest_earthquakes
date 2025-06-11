@@ -311,11 +311,20 @@
     <aside id="quakePanel" class="panel open" aria-hidden="false">
       <header class="panel-header">
         <h3 id="panelTitle">Son 10 Deprem</h3>
+
         <button id="closePanel" class="panel-close" aria-label="Kapat">
           &times;
         </button>
       </header>
       <section class="panel-body">
+        <a
+          id="backHomeLink"
+          href="https://mapelse.github.io/"
+          style="margin-bottom: 30px; display: inline-block; font-size: 0.9rem"
+        >
+          ANASAYFAYA GERI DON
+        </a>
+        <br />
         <p id="tableHint" class="table-hint">
           En son gerçekleşen deprem kalp atışı animasyonuyla gosterilen mavi
           dairedir. <br />
@@ -333,7 +342,11 @@
           </thead>
           <tbody></tbody>
         </table>
-        <a href="https://earthquake.usgs.gov/" target="_blank" rel="noopener"
+        <a
+          href="https://earthquake.usgs.gov/"
+          target="_blank"
+          rel="noopener"
+          style="margin-top: 30px; display: inline-block"
           >Data:USGS</a
         >
       </section>
@@ -377,6 +390,7 @@
             details: "Detay",
             hint: "En son gerçekleşen deprem kalp atışı animasyonuyla gösterilen mavi dairedir.<br><br>Konuma gitmek için satıra tıklayın",
             pageTitle: "Son Depremler – Canlı Deprem Haritası | Mapelse",
+            backHome: "ANASAYFAYA GERI DON",
           },
           en: {
             title: "Time of Earthquake",
@@ -389,6 +403,7 @@
             details: "Details",
             hint: "The most recent earthquake is represented by the blue circle with a heartbeat animation.<br><br>Click a row to fly to its location",
             pageTitle: "Latest Earthquakes – Live Map | Mapelse",
+            backHome: "RETURN TO HOMEPAGE",
           },
         };
         let lang = "tr";
@@ -552,6 +567,7 @@
           document.getElementById("thTime").textContent = t.time;
           document.title = t.pageTitle;
           document.getElementById("tableHint").innerHTML = t.hint;
+          document.getElementById("backHomeLink").textContent = t.backHome;
         }
         loadData();
         setInterval(loadData, 600000);

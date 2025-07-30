@@ -561,7 +561,7 @@
 
             // sadece tık – flyTo + halo
             tr.onclick = () => {
-              map.flyTo([lat, lng], 10, { duration: 0.6 });
+              map.flyTo([lat, lng], 5, { duration: 0.6 });
 
               if (halo) map.removeLayer(halo); // önceki halkayı temizle
               halo = L.circleMarker([lat, lng], {

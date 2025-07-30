@@ -136,11 +136,25 @@
       }
       @media (max-width: 480px) {
         /* Force both the closed and the open panel to be slimmer */
+        .panel {
+          overflow-y: auto; /* Add this */
+        }
         .panel,
         .panel.open {
           width: 100x !important; /* ↓ Was 280px */
           height: 65%; /* optional, keep it responsive */
         }
+      }
+
+      .panel-body {
+        overflow-x: auto; /* Optional: enable horizontal scroll inside table if needed */
+      }
+      .panel {
+        overflow-y: auto;
+      }
+
+      .panel-body {
+        overflow-x: auto; /* For wide tables on small screens */
       }
 
       .panel.open {
